@@ -1,0 +1,185 @@
+.app {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.recherche {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.recherche input {
+  width: 300px;
+  padding: 12px;
+  margin-right: 10px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.recherche input:focus {
+  border-color: #3498db;
+}
+
+.recherche button {
+  padding: 12px 25px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.recherche button:hover {
+  background-color: #2980b9;
+}
+
+.formulaire {
+  max-width: 500px;
+  margin: 0 auto 40px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.formulaire input,
+.formulaire textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+.formulaire textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.formulaire button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.formulaire button:hover {
+  background-color: #27ae60;
+}
+
+.films {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.film {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.film:hover {
+  transform: translateY(-5px);
+}
+
+.film img {
+  width: 100%;
+  height: 375px;
+  object-fit: cover;
+}
+
+.film h3 {
+  margin: 15px;
+  font-size: 1.2em;
+  color: #2c3e50;
+}
+
+.film .date {
+  margin: 10px 15px;
+  color: #7f8c8d;
+  font-size: 0.9em;
+}
+
+.film .note {
+  margin: 10px 15px;
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.film .description {
+  margin: 10px 15px 15px;
+  color: #34495e;
+  font-size: 0.9em;
+  line-height: 1.4;
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.film-personnel {
+  position: relative;
+  border: 2px solid #3498db;
+}
+
+.film-personnel .supprimer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.film-personnel:hover .supprimer {
+  opacity: 1;
+}
+
+.film-personnel .supprimer:hover {
+  background-color: #c0392b;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+}
