@@ -3,58 +3,54 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Connexion à MongoDB
+// Connexion MongoDB
 mongoose.connect('mongodb+srv://admin:admin@cluster0.bedq1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
 
-// Modèle de film
+// Modèle Film
 const Film = mongoose.model('Film', {
     titre: String,
     description: String,
     image: String,
-    dateAjout: { type: Date, default: Date.now },
-    note: { type: Number, default: 0 }
+    note: Number
 });
 
-// Route pour récupérer tous les films
-app.get('/api/films', (req, res) => {
-    Film.find()
-        .sort({ dateAjout: -1 }) // Du plus récent au plus ancien
-        .then(films => res.json(films))
-        .catch(err => res.status(500).json({ message: "Erreur lors de la récupération des films" }));
+// Route pour obtenir tous les films
+app.get('/api/films', async (req, res) => {
+    try {
+        const films = await Film.find();
+        res.json(films);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 });
 
 // Route pour ajouter un film
-app.post('/api/films', (req, res) => {
-    const film = new Film({
-        titre: req.body.titre,
-        description: req.body.description,
-        image: req.body.image,
-        note: req.body.note || 0
-    });
-
-    film.save()
-        .then(filmSauvegarde => {
-            res.status(201).json({
-                message: "Film ajouté avec succès",
-                film: filmSauvegarde
-            });
-        })
-        .catch(err => {
-            res.status(500).json({ message: "Erreur lors de l'ajout du film" });
-        });
+app.post('/api/films', async (req, res) => {
+    try {
+        const film = new Film(req.body);
+        await film.save();
+        res.json({ message: "Film ajouté" });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 });
 
 // Route pour supprimer un film
-app.delete('/api/films/:id', (req, res) => {
-    Film.findByIdAndDelete(req.params.id)
-        .then(() => res.json({ message: "Film supprimé avec succès" }))
-        .catch(err => res.status(500).json({ message: "Erreur lors de la suppression" }));
+app.delete('/api/films/:id', async (req, res) => {
+    try {
+        await Film.findByIdAndDelete(req.params.id);
+        res.json({ message: "Film supprimé" });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur" });
+    }
 });
 
-app.listen(5000, () => {
-    console.log('Serveur démarré sur http://localhost:5000');
-    console.log('API disponible sur http://localhost:5000/api/films');
+// Démarrer le serveur
+app.listen(8000, () => {
+    console.log('Serveur démarré sur http://localhost:8000');
 });

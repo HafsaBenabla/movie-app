@@ -1,67 +1,65 @@
 import React, { useState } from 'react';
-import '../styles/AddMovie.css';
 
-const AddMovie = ({ onAddMovie }) => {
-  const [newMovie, setNewMovie] = useState({
-    title: '',
-    description: '',
-    posterURL: '',
-    rating: ''
-  });
+function AddMovie({ onAjout }) {
+    const [film, setFilm] = useState({
+        titre: '',
+        description: '',
+        image: '',
+        note: 0
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onAddMovie(newMovie);
-    setNewMovie({ title: '', description: '', posterURL: '', rating: '' });
-  };
+    function handleSubmit(e) {
+        e.preventDefault();
+        onAjout(film);
+        // Réinitialiser le formulaire
+        setFilm({
+            titre: '',
+            description: '',
+            image: '',
+            note: 0
+        });
+    }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewMovie(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    return (
+        <form onSubmit={handleSubmit} className="formulaire">
+            <h2>Ajouter un film</h2>
+            
+            <input
+                type="text"
+                placeholder="Titre du film"
+                value={film.titre}
+                onChange={e => setFilm({...film, titre: e.target.value})}
+                required
+            />
 
-  return (
-    <form onSubmit={handleSubmit} className="add-movie-form">
-      <h3>Ajouter un nouveau film</h3>
-      <input
-        type="text"
-        name="title"
-        value={newMovie.title}
-        onChange={handleChange}
-        placeholder="Titre du film"
-        required
-      />
-      <textarea
-        name="description"
-        value={newMovie.description}
-        onChange={handleChange}
-        placeholder="Description"
-        required
-      />
-      <input
-        type="url"
-        name="posterURL"
-        value={newMovie.posterURL}
-        onChange={handleChange}
-        placeholder="URL de l'affiche"
-        required
-      />
-      <input
-        type="number"
-        name="rating"
-        value={newMovie.rating}
-        onChange={handleChange}
-        placeholder="Note sur 10"
-        min="0"
-        max="10"
-        required
-      />
-      <button type="submit">Ajouter le film</button>
-    </form>
-  );
-};
+            <textarea
+                placeholder="Description du film"
+                value={film.description}
+                onChange={e => setFilm({...film, description: e.target.value})}
+                required
+            />
+
+            <input
+                type="text"
+                placeholder="URL de l'image"
+                value={film.image}
+                onChange={e => setFilm({...film, image: e.target.value})}
+                required
+            />
+
+            <input
+                type="number"
+                placeholder="Note sur 10"
+                min="0"
+                max="10"
+                value={film.note}
+                onChange={e => setFilm({...film, note: Number(e.target.value)})}
+                required
+            />
+
+            <button type="submit">Ajouter</button>
+        </form>
+    );
+}
 
 export default AddMovie;

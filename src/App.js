@@ -1,111 +1,122 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import MovieList from './components/MovieList';
+import SearchBar from './components/SearchBar';
+import AddMovie from './components/AddMovie';
+import Filter from './components/Filter';
+import { getFilmsPopulaires, rechercherFilms, ajouterFilm, getMesFilms } from './api';
 import './App.css';
 
 function App() {
   const [films, setFilms] = useState([]);
+  const [filmsNonFiltres, setFilmsNonFiltres] = useState([]);
+  const [mesFilms, setMesFilms] = useState([]);
   const [recherche, setRecherche] = useState('');
-  const [nouveauFilm, setNouveauFilm] = useState({
-    titre: '',
-    description: '',
-    image: ''
+  const [filtres, setFiltres] = useState({
+    title: '',
+    rating: 0
   });
 
-  const API_KEY = '98d79a7251b4050b7449d0443748f383';
-
-  // Charger les films populaires au démarrage
+  // Charger les films au démarrage
   useEffect(() => {
-    chargerFilmsPopulaires();
+    chargerFilms();
+    chargerMesFilms();
   }, []);
 
-  // Fonction pour charger les films populaires
-  const chargerFilmsPopulaires = async () => {
-    const reponse = await axios.get(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=fr-FR&page=1`
-    );
-    setFilms(reponse.data.results);
-  };
-
-  // Fonction pour rechercher des films
-  const rechercherFilms = async () => {
-    if (recherche.trim() === '') {
-      chargerFilmsPopulaires();
-      return;
+  // Charger les films de l'API TMDB
+  const chargerFilms = async () => {
+    try {
+      const response = await getFilmsPopulaires();
+      setFilms(response.data.results);
+      setFilmsNonFiltres(response.data.results);
+    } catch (error) {
+      console.error("Erreur lors du chargement des films:", error);
     }
-    const reponse = await axios.get(
-      `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=fr-FR&query=${recherche}&page=1`
-    );
-    setFilms(reponse.data.results);
   };
 
-  // Fonction pour ajouter un film à MongoDB
-  const ajouterFilm = async (e) => {
-    e.preventDefault();
-    await axios.post('http://localhost:5000/api/films', nouveauFilm);
-    setNouveauFilm({ titre: '', description: '', image: '' });
-    alert('Film ajouté avec succès !');
+  // Charger mes films personnels
+  const chargerMesFilms = async () => {
+    try {
+      const response = await getMesFilms();
+      setMesFilms(response.data);
+    } catch (error) {
+      console.error("Erreur lors du chargement de mes films:", error);
+    }
+  };
+
+  // Fonction de recherche
+  const handleRecherche = async () => {
+    try {
+      if (recherche.trim() === '') {
+        chargerFilms();
+        return;
+      }
+      const response = await rechercherFilms(recherche);
+      setFilms(response.data.results);
+      setFilmsNonFiltres(response.data.results);
+    } catch (error) {
+      console.error("Erreur lors de la recherche:", error);
+    }
+  };
+
+  // Fonction de filtrage
+  const handleFilterChange = (filter) => {
+    const newFiltres = { ...filtres, [filter.type]: filter.value };
+    setFiltres(newFiltres);
+
+    let resultatsFiltrés = [...filmsNonFiltres];
+
+    if (newFiltres.title) {
+      resultatsFiltrés = resultatsFiltrés.filter(film =>
+        film.title.toLowerCase().includes(newFiltres.title.toLowerCase())
+      );
+    }
+
+    if (newFiltres.rating > 0) {
+      resultatsFiltrés = resultatsFiltrés.filter(film =>
+        film.vote_average >= newFiltres.rating
+      );
+    }
+
+    setFilms(resultatsFiltrés);
+  };
+
+  // Fonction pour ajouter un film
+  const handleAjoutFilm = async (nouveauFilm) => {
+    try {
+      await ajouterFilm(nouveauFilm);
+      alert('Film ajouté avec succès !');
+      // Recharger la liste des films personnels
+      chargerMesFilms();
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du film:", error);
+      alert("Erreur lors de l'ajout du film");
+    }
   };
 
   return (
-    <div className="app">
-      <h1>🎬 Films</h1>
+    <div className="App">
+      <h1>🎬 Application de Films</h1>
+      <SearchBar 
+        recherche={recherche}
+        setRecherche={setRecherche}
+        onRecherche={handleRecherche}
+      />
+      <Filter onFilterChange={handleFilterChange} />
+      <AddMovie onAjout={handleAjoutFilm} />
+      
+      {/* Afficher mes films personnels */}
+      <h2>Mes Films</h2>
+      <MovieList 
+        films={mesFilms}
+        estPersonnel={true}
+      />
 
-      {/* Barre de recherche */}
-      <div className="recherche">
-        <input
-          type="text"
-          placeholder="Rechercher un film..."
-          value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && rechercherFilms()}
-        />
-        <button onClick={rechercherFilms}>Rechercher</button>
-      </div>
-
-      {/* Formulaire d'ajout de film */}
-      <form onSubmit={ajouterFilm} className="formulaire">
-        <h2>Ajouter un nouveau film</h2>
-        <input
-          type="text"
-          placeholder="Titre du film"
-          value={nouveauFilm.titre}
-          onChange={(e) => setNouveauFilm({...nouveauFilm, titre: e.target.value})}
-          required
-        />
-        <textarea
-          placeholder="Description du film"
-          value={nouveauFilm.description}
-          onChange={(e) => setNouveauFilm({...nouveauFilm, description: e.target.value})}
-          required
-        />
-        <input
-          type="text"
-          placeholder="URL de l'image"
-          value={nouveauFilm.image}
-          onChange={(e) => setNouveauFilm({...nouveauFilm, image: e.target.value})}
-          required
-        />
-        <button type="submit">Ajouter le film</button>
-      </form>
-
-      {/* Liste des films */}
-      <div className="films">
-        {films.map(film => (
-          <div key={film.id} className="film">
-            <img
-              src={film.poster_path 
-                ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
-                : 'https://via.placeholder.com/500x750?text=Pas+d%27image'
-              }
-              alt={film.title}
-            />
-            <h3>{film.title}</h3>
-            <p className="date">Date de sortie : {new Date(film.release_date).toLocaleDateString('fr-FR')}</p>
-            <p className="note">★ {film.vote_average.toFixed(1)}/10</p>
-            <p className="description">{film.overview || 'Pas de description disponible'}</p>
-          </div>
-        ))}
-      </div>
+      {/* Afficher les films de TMDB */}
+      <h2>Films Populaires</h2>
+      <MovieList 
+        films={films}
+        estPersonnel={false}
+      />
     </div>
   );
 }

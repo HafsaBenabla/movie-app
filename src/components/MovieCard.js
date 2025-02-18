@@ -1,34 +1,37 @@
 import React from 'react';
-import '../styles/MovieCard.css';
 
-function MovieCard({ title, overview, poster_path, release_date, vote_average }) {
-  const imageUrl = poster_path 
-    ? `https://image.tmdb.org/t/p/w500${poster_path}`
-    : 'https://via.placeholder.com/500x750?text=Pas+d%27image';
+function MovieCard({ film, estPersonnel, onSupprimer }) {
+    // Obtenir l'URL de l'image
+    const imageUrl = film.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+        : film.image || 'https://via.placeholder.com/500x750';
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+    // Obtenir le titre
+    const titre = film.title || film.titre;
 
-  return (
-    <div className="movie-card">
-      <img src={imageUrl} alt={title} className="movie-poster" />
-      <div className="movie-info">
-        <h3>{title}</h3>
-        {release_date && (
-          <p className="release-date">{formatDate(release_date)}</p>
-        )}
-        {vote_average > 0 && (
-          <p className="rating">★ {vote_average.toFixed(1)}</p>
-        )}
-        <p className="overview">{overview}</p>
-      </div>
-    </div>
-  );
+    // Obtenir la description
+    const description = film.overview || film.description;
+
+    // Obtenir la note
+    const note = film.vote_average || film.note || 0;
+
+    return (
+        <div className="film">
+            <img src={imageUrl} alt={titre} />
+            <h3>{titre}</h3>
+            <p className="note">★ {note}/10</p>
+            <p className="description">{description}</p>
+            
+            {estPersonnel && (
+                <button 
+                    className="supprimer"
+                    onClick={() => onSupprimer(film._id)}
+                >
+                    Supprimer
+                </button>
+            )}
+        </div>
+    );
 }
 
 export default MovieCard;
