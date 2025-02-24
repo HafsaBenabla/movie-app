@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
-        <nav className="bg-white shadow-lg mb-4">
+        <nav className="bg-white shadow-lg mb-5">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <Link to="/" className="text-xl font-bold text-gray-800">
               Cinema App
